@@ -1,6 +1,8 @@
-onApproved:
-  remove:
-    - permission to merge
-  set:
-    - Reviewed
-    - Ready to merge
+merge requested:
+  - ./*
+
+tests:
+  - ./*_test.go
+
+documentation:
+  - ./*.md
