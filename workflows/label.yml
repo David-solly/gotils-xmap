@@ -1,0 +1,39 @@
+# This workflow will triage pull requests and apply a label based on the
+# paths that are modified in the pull request.
+#
+# To use this workflow, you will need to set up a .github/labeler.yml
+# file with configuration.  For more information, see:
+# https://github.com/actions/labeler
+
+name: Labeler
+on: [pull_request]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/labeler@v2
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          CONFIG_PATH: config.yml
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out the pull request's source code.
+      - name: Check out source code
+        uses: actions/checkout@v2
+
+      # Install Golang.
+      - name: Install golang
+        uses: actions/setup-go@v2-beta
+        with:
+          go-version: "1.14"
+      - name: Version in use
+        run: go version
+
+      # Run unit tests.
+      - name: Run unit tests
+        run: go test -v ./../../pkg/api/v1/service/

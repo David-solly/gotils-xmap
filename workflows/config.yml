@@ -1,0 +1,6 @@
+onApproved:
+  remove:
+    - permission to merge
+  set:
+    - Reviewed
+    - Ready to merge
