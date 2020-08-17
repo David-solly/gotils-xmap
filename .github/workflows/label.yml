@@ -16,4 +16,4 @@ jobs:
       - uses: actions/labeler@v2
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          CONFIG_PATH: config.yml
+          CONFIG_PATH: .github/config.yml
