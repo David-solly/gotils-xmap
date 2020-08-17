@@ -1,0 +1,8 @@
+merge requested:
+  - ./*
+
+tests:
+  - ./*_test.go
+
+documentation:
+  - ./*.md
