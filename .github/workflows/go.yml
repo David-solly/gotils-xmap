@@ -37,4 +37,4 @@ jobs:
       run: ls
 
     - name: Test
-      run: go test -v /pkg/api/v1/service
+      run: go test -v ./pkg/api/v1/service/
