@@ -32,6 +32,9 @@ jobs:
 
     - name: Build
       run: go build -v .
+    
+    - name: show dir
+      run: ls
 
     - name: Test
-      run: go test -v ./../../pkg/api/v1/service
+      run: go test -v /pkg/api/v1/service
