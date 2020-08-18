@@ -27,6 +27,15 @@ func (p *XMap) Add(k string, v interface{}) {
 
 }
 
+//Update : update a value by its index
+func (p *XMap) Update(i int, v interface{}) (previous, newValue interface{}) {
+	newVP := interface{}(v)
+	previous = *p.GetByIndex(i).(*interface{})
+	p.Slice()[i] = &newVP
+	newValue = *p.GetByIndex(i).(*interface{})
+	return
+}
+
 //Delete :remove an entry using a key to the entry
 func (p *XMap) Delete(key string) {
 	if _, ok := p.xmap[key]; ok {
@@ -52,10 +61,14 @@ func (p *XMap) RebuildIndex() {
 
 		}
 	}
-	*p = newm
+	p.elements = newm.elements
+	p.xIDKy = newm.xIDKy
+	p.xmap = newm.xmap
+	p.xslice = newm.xslice
+
 }
 
-// Slice : Reteurns the Slice of the values in the xmap structure, retains insertion order
+// Slice : Returns the Slice of the values in the xmap structure, retains insertion order
 func (p *XMap) Slice() []*interface{} {
 	return p.xslice
 }
@@ -79,6 +92,9 @@ func (p *XMap) Count() int {
 // GetByKey : Get the value by key as a normal map function
 func (p *XMap) GetByKey(key string) (interface{}, bool) {
 	k, b := p.xmap[key]
+	if !b {
+		return nil, b
+	}
 	return **k, b
 }
 
