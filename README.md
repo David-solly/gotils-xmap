@@ -10,7 +10,8 @@ Arose because of the need to quickly iterate through sets and retrieve objects q
 
 ## CRUD options
 
-    - Add ```
+    - Add 
+    // new xmap structure
     xm := XMap()
 
     // Add function - keys must be strings
@@ -20,19 +21,19 @@ Arose because of the need to quickly iterate through sets and retrieve objects q
     // Looks for free spaces in the xmap structure and fills them
     // returns the index of the newly inserted item
     newIndex := AddEco(k, v)
-    ```
+   
 
     - Delete
-    -```
+   
     // Delete function
     xm.Delete(key)
 
     // Delete by item index
     xm.DeleteElementAt(itemIndex)
-    ```
+    
 
     - Update
-    ```
+    
     // Overwrite with the Insert function with the same key value
     // (like a normal map)
     xm.Add(key, newValue)
@@ -40,10 +41,10 @@ Arose because of the need to quickly iterate through sets and retrieve objects q
     // Update value via the item index
     // returns the previous and current values
     prev, current := xm.Update(itemIndex, newValue)
-    ```
+    
 
     - Read
-    ```
+    
     // Read an item by a key
     // returns a pointer to the value and a Boolean of success
     pointerToValue, ok := xm.GetByKey(key)
@@ -51,10 +52,10 @@ Arose because of the need to quickly iterate through sets and retrieve objects q
 
     // Read by index
     pointerToValue := xm.GetByIndex(itemIndex)
-    ```
+   
 
     - Memory management
-    ```
+    
     // Reindex the structure by squashing all free space
     // This will also reset the indicies for all items
     // Only use when you no longer need previous index
@@ -62,12 +63,13 @@ Arose because of the need to quickly iterate through sets and retrieve objects q
 
     // Concurrently calculates free space within the structure
     // Gives manual control of the process
+    // Only necessary if the slice is modified directlty using xm.Slice() to delete and insert items
     xm.IndexFreeSpace()
 
     // View free space
     // returns an int of the number of free slots in the structure
     count := xm.FreeSpace()
-    ```
+    
 
 ### Add is via
 
