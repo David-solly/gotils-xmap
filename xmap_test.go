@@ -34,27 +34,68 @@ func TestXmapFeatures(t *testing.T) {
 	})
 
 	t.Run("Test xmap DeleteElementAt", func(t *testing.T) {
-		xm.DeleteElementAt(0)
+		eToDelete := 15
+		xm.DeleteElementAt(eToDelete)
 		assert.Equal(t, xm.Count(), limit-1)
 		assert.Equal(t, xm.elements, limit-1)
 		assert.Equal(t, len(xm.xslice), limit) // Still keep 100 items
 
-		b := xm.GetByIndex(0)
+		b := xm.GetByIndex(eToDelete)
 		assert.Equal(t, true, b != nil)
 		assert.Equal(t, true, b.(*interface{}) == nil)
-		c, k := xm.GetByKey(fmt.Sprintf("key%d", 0))
+		c, k := xm.GetByKey(fmt.Sprintf("key%d", eToDelete))
 		assert.Equal(t, true, k)
 		assert.NotNil(t, c)
+		assert.Equal(t, xm.FreeSpace(), 2)
 
 	})
 
+	t.Run("Test xmap index free space", func(t *testing.T) {
+		// Deleting elements directly from the underlying struct will
+		// require manual indexing
+		xm.Slice()[16] = nil
+		xm.IndexFreeSpace()
+		assert.Equal(t, xm.FreeSpace() > 0, true)
+	})
+
+	t.Run("Test xmap Eco Add over free space", func(t *testing.T) {
+		eToDelete := 12
+		xm.DeleteElementAt(eToDelete)
+
+		diff := []struct {
+			key   string
+			Value interface{}
+			Index int
+		}{
+			{"hi", 2332, 89}, //first deleted index
+			{"key--1234", "121254", 15},
+			{"key--123", "121255", 12},
+			{"key--12", 125.554, 100}, //list full start expanding
+			{"key--1", 125.554, 101},  // expanded structure
+		}
+
+		for _, data := range diff {
+			newIDX := xm.AddEco(data.key, data.Value)
+			assert.Equal(t, newIDX, data.Index)
+			assert.Equal(t, xm.elements, len(xm.Map()))
+		}
+	})
+
 	t.Run("Test xmap RebuildIndex", func(t *testing.T) {
+		xm.Delete(fmt.Sprintf("key%d", 0))
 		xm.RebuildIndex()
-		assert.Equal(t, xm.Count(), limit-1)
-		assert.Equal(t, limit-1, xm.elements)
+		assert.Equal(t, xm.Count(), limit)
+		assert.Equal(t, xm.elements, limit)
 		c, k := xm.GetByKey(fmt.Sprintf("key%d", 0))
 		assert.Equal(t, k, false)
 		assert.Equal(t, c == nil, true)
+
+	})
+
+	t.Run("Test xmap Get underlying Slice", func(t *testing.T) {
+		sl := xm.Slice()
+		assert.Equal(t, len(sl), limit)
+
 	})
 
 	t.Run("Test xmap ADD different datatypes", func(t *testing.T) {
@@ -93,7 +134,7 @@ func TestXmapValueAlteration(t *testing.T) {
 	key := "key-0"
 	xm.Add(key, value)
 
-	t.Run("Change value of data - non recommended way", func(t *testing.T) {
+	t.Run("Change value of data - long way", func(t *testing.T) {
 		newVP := interface{}(newVal)
 		a := xm.GetByIndex(0)
 		assert.Equal(t, true, a != nil)
@@ -152,6 +193,33 @@ func TestXmapValueAlteration(t *testing.T) {
 		assert.Equal(t, true, c != nil)
 		assert.Equal(t, c, newValue)
 
+	})
+
+	t.Run("Get index of value", func(t *testing.T) {
+		xm := Xmap()
+		diff := []struct {
+			Key   string
+			Value interface{}
+			Found bool
+			Index int
+		}{
+			{"key-0", "1234567891", true, 0},
+			{"", "12lkl34567891", false, -1},
+		}
+
+		xm.Add(diff[0].Key, diff[0].Value)
+
+		for _, data := range diff {
+			a, k := xm.GetIndexOf(data.Value)
+			assert.Equal(t, k, data.Found)
+			assert.Equal(t, a, data.Index)
+
+			if k {
+				keyV := xm.Indexes()[a]
+				assert.Equal(t, keyV, data.Key)
+
+			}
+		}
 	})
 }
 
