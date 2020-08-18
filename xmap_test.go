@@ -82,16 +82,7 @@ func TestXmapFeatures(t *testing.T) {
 				assert.Equal(t, reflect.TypeOf(*xmi.GetByIndex(i).(*interface{})), reflect.TypeOf(data.Data))
 			})
 		}
-
 	})
-
-	// t.Run("Test xmap clear item by index", func(t *testing.T) {
-
-	// })
-
-	// t.Run("Test xmap reindex items", func(t *testing.T) {
-
-	// })
 
 }
 
